@@ -6,11 +6,7 @@ echo " \__ \__ \ __ | | |\/| |/ _ \| .  |/ _ \ (_ | _||   /  "
 echo " |___/___/_||_| |_|  |_/_/ \_\_|\_/_/ \_\___|___|_|_\\ "
 
 condition=true
-while [condition]; do 
-    menu
-    read option
 
-    done
 
 menu() {
     echo "-- Status SSH: "
@@ -40,3 +36,9 @@ option(option) {
     0)condition=false;;
     *)echo "Opçao inválida!";;
 }
+
+while [condition]; do 
+    menu
+    read option
+
+    done
