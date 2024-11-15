@@ -15,8 +15,6 @@ logo() {
     echo " "
 }
 
-
-
 # Verificar se é root
 if [ $(id -u) -ne 0 ]; then
     echo "Este script precisa ser executado como root!"
@@ -30,11 +28,35 @@ statusssh() {
         else
             echo "O serviço SSH não está ativo"
         fi
+    echo "IP Local: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1)"
+
 }
 
 # check status IP ---------------------------------------------------------
 statusip() {
-    ip a | grep inet6
+
+    #ip local
+    echo "IP Local: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1)"
+
+    #mascara de rede
+    echo "Máscara de Rede: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1 | xargs -I {} ipcalc -n {} | grep Netmask | awk '{print $2}')"
+    
+    #mostra se esta em dhcp ou estatico
+    for interface in $(nmcli device status | awk '{if(NR>1) print $1}'); do
+    echo "Interface: $interface"
+    method=$(nmcli device show $interface | grep -i 'IP4.method' | awk '{print $2}')
+    if [ "$method" == "auto" ]; then
+        echo "Modo: DHCP"
+    elif [ "$method" == "manual" ]; then
+        echo "Modo: Static"
+    else
+        echo "Modo desconhecido"
+    fi
+    echo
+    done
+
+
+
 }
 
 # Menu principal ----------------------------------------------------------
