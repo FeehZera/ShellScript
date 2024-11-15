@@ -26,6 +26,7 @@ menu() {
 statusssh() {
     #aqui vem a magica do status
 }
+
 menussh() {
     echo "         -- MENU SSH -- "
     echo " "
@@ -47,6 +48,7 @@ menussh() {
 statusip() {
     #aqui vem a magica do status
 }
+
 menuip() {
     echo "         -- MENU IP -- "
     echo " "
