@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# logo ----------------------------------------------------------------------
+#condicao de execucao ---------------------------------------------------------
+condition=true
+-------------------------------------------------------------------------------
+
+# logo ------------------------------------------------------------------------
 logo() {
     clear
     echo "  ___ ___ _  _   __  __   _   _  _   _   ___ ___ ___   "
@@ -11,15 +15,21 @@ logo() {
     echo " "
 }
 
+
+
 # Verificar se é root
 if [ $(id -u) -ne 0 ]; then
     echo "Este script precisa ser executado como root!"
-    exit 1
+    condition=false
 fi
 
 # check status SSH --------------------------------------------------------
 statusssh() {
-    systemctl is-active --quiet sshd && echo " SSH: Ativo" || echo " SSH: Inativo"
+    if systemctl is-active --quiet sshd; then
+            echo "O serviço SSH está ativo"
+        else
+            echo "O serviço SSH não está ativo"
+        fi
 }
 
 # check status IP ---------------------------------------------------------
@@ -104,36 +114,48 @@ optionmenu() {
 optionmenussh() {
     case $1 in
     1)
-        echo "Desativando/Ativando o serviço SSH"
-        systemctl restart sshd
+        if systemctl is-active --quiet sshd; then
+            systemctl stop sshd # desativando
+        else
+            systemctl start sshd  # ativando
+        fi
+        logo
+        menussh
         ;;
     2)
-        echo "Modificando Root Login"
-        # Comando para modificar root login
+        logo
+        menussh
         ;;
     3)
-        echo "Adicionando Grupo"
-        # Comando para adicionar grupo
+        logo
+        menussh
         ;;
    
     4)
-        clear
+        logo
+        menussh
         ;;
     5)
-        clear
+        systemctl restart sshd
+        logo
+        menussh
         ;;
     6)
-        clear
+        nano /etc/ssh/sshd_config
+        logo
+        menussh
         ;;
     7)
-        clear
+        logo
+        menussh
         ;;
     8)  
-        clear
+        logo
+        menussh
         ;;
 
     0)
-        clear
+        logo
         menu
         ;;
     *)
@@ -169,19 +191,19 @@ optionmenuip() {
         clear
         ;;
     0)
-        clear
+        logo
         menu
         ;;
     *)
-        clear
         echo "Opção inválida!"
+        logo
         menuip
         ;;
     esac
 }
 
 # Loop principal -----------------------------------------------------------
-condition=true
+
 while $condition
 do
     logo            # Exibe o logo
