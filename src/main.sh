@@ -172,7 +172,7 @@ optionmenussh() {
     5)  
         if systemctl is-active --quiet sshd; then
             # Se o SSH estiver ativo, recarrega o serviço
-            /etc/init.d/ssh reload
+            /etc/init.d/ssh restart
         else
             # Se o SSH não estiver ativo, informa ao usuário
             echo "SSH: não está ativo"
@@ -181,7 +181,7 @@ optionmenussh() {
             
             # Verifica se a resposta do usuário foi 'y' ou 'Y'
             if [ "$useropt" = "y" ] || [ "$useropt" = "Y" ]; then
-                /etc/init.d/ssh reload
+                /etc/init.d/ssh restart
                 logo
                 menussh
             # Verifica se a resposta do usuário foi 'n' ou 'N'
