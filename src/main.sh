@@ -177,22 +177,18 @@ optionmenussh() {
             echo "Se estiver em uma conexão SSH voce sera desconectado"
             read -p " Deseja reiniciar mesmo assim [y/n]?" useropt
             if [ useropt = y || useropt = Y ]; then
-            /etc/init.d/ssh reload
-            logo
-            menussh
+                /etc/init.d/ssh reload
+                logo
+                menussh
             elif [ useropt = n || useropt = N ]; then
-            logo
-            menussh
+                logo
+                menussh
             else
-            echo "Opcao invalida"
-            logo
-            menussh
+                echo "Opcao invalida"
+                logo
+                menussh
+            fi
         fi  
-    
-    
-        echo ""
-        logo
-        menussh
         ;;
     6)
         nano /etc/ssh/sshd_config
