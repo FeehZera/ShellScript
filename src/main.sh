@@ -169,9 +169,11 @@ optionmenuip() {
 
 # Loop principal -----------------------------------------------------------
 condition=true
-while [ $condition -eq true ] do
-    logo
-    menu
+while $condition
+do
+    logo            # Exibe o logo
+    menu            # Exibe o menu
     read -p "Escolha uma opção: " user_option
     optionmenu $user_option
+    
 done
