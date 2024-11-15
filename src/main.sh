@@ -24,9 +24,9 @@ fi
 # check status SSH --------------------------------------------------------
 statusssh() {
     if systemctl is-active --quiet sshd; then
-            echo "O serviço SSH está ativo"
+            echo "SSH: está ativo"
         else
-            echo "O serviço SSH não está ativo"
+            echo "SSH: não está ativo"
         fi
     echo "IP Local: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1)"
 
@@ -39,21 +39,35 @@ statusip() {
     echo "IP Local: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1)"
 
     #mascara de rede
-    echo "Máscara de Rede: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1 | xargs -I {} ipcalc -n {} | grep Netmask | awk '{print $2}')"
     
     #mostra se esta em dhcp ou estatico
-    for interface in $(nmcli device status | awk '{if(NR>1) print $1}'); do
+    
+# Loop para todas as interfaces de rede
+for interface in $(ls /sys/class/net); do
     echo "Interface: $interface"
-    method=$(nmcli device show $interface | grep -i 'IP4.method' | awk '{print $2}')
-    if [ "$method" == "auto" ]; then
+
+    # Verificando o método de configuração DHCP ou estático no arquivo /etc/network/interfaces
+    if grep -q "iface $interface inet dhcp" /etc/network/interfaces; then
         echo "Modo: DHCP"
-    elif [ "$method" == "manual" ]; then
-        echo "Modo: Static"
+    elif grep -q "iface $interface inet static" /etc/network/interfaces; then
+        echo "Modo: Estático"
     else
-        echo "Modo desconhecido"
+        echo "Modo: Desconhecido ou não configurado no arquivo /etc/network/interfaces"
     fi
-    echo
-    done
+
+    # Verificando a máscara de rede e IP usando o comando 'ip'
+    ip_info=$(ip -4 addr show $interface | grep inet)
+    if [ ! -z "$ip_info" ]; then
+        ip_address=$(echo $ip_info | awk '{print $2}' | cut -d/ -f1)
+        netmask=$(echo $ip_info | awk '{print $2}' | cut -d/ -f2)
+        echo "IP: $ip_address"
+        echo "Máscara de Rede: $netmask"
+    else
+        echo "Sem IP configurado"
+    fi
+
+    echo # Espaço em branco entre interfaces
+done
 
 
 
