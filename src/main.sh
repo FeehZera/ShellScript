@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#logo -------------------------------------------------------------------------
-
+# logo ----------------------------------------------------------------------
 logo() {
     echo "  ___ ___ _  _   __  __   _   _  _   _   ___ ___ ___   "
     echo " / __/ __| || | |  \/  | /_\ | \| | /_\ / __| __| _ \\ "
@@ -10,23 +9,31 @@ logo() {
     echo "V1.0 beta"
 }
 
-#check instaler ---------------------------------------------------------------
+# Verificar se é root
+if [ $(id -u) -ne 0 ]; then
+    echo "Este script precisa ser executado como root!"
+    exit 1
+fi
 
-#display ----------------------------------------------------------------------
+# check status SSH --------------------------------------------------------
+statusssh() {
+    systemctl is-active --quiet sshd && echo "SSH Ativo" || echo "SSH Inativo"
+}
 
+# check status IP ---------------------------------------------------------
+statusip() {
+    ip a | grep inet
+}
+
+# Menu principal ----------------------------------------------------------
 menu() {
     echo "         -- MENU -- "
     echo "1- Configurar serviço SSH"
-    echo "2- Configurar IP da Maquina"
+    echo "2- Configurar IP da Máquina"
     echo "0- Sair"
 }
 
-#menu ssh
-
-statusssh() {
-    #aqui vem a magica do status
-}
-
+# Menu SSH -----------------------------------------------------------------
 menussh() {
     echo "         -- MENU SSH -- "
     echo " "
@@ -37,18 +44,13 @@ menussh() {
     echo "3- Adicionar Grupo"
     echo "4- Remover Grupo"
     echo "5- Reiniciar o serviço SSH"
-    echo "6- Abrir arquivo configuracao do SSH"
+    echo "6- Abrir arquivo de configuração do SSH"
     echo "7- Abrir pasta de chaves de criptografia"
     echo "8- Gerar Chave de criptografia"
     echo "0- Página anterior"
 }
 
-#menu ip
-
-statusip() {
-    #aqui vem a magica do status
-}
-
+# Menu IP ------------------------------------------------------------------
 menuip() {
     echo "         -- MENU IP -- "
     echo " "
@@ -57,23 +59,23 @@ menuip() {
     echo "1- Desativar/Ativar interface de rede"
     echo "2- Modificar Conexão DCHP/STATIC"
     echo "3- Modificar IP"
-    echo "4- Modificar Mascara de rede"
+    echo "4- Modificar Máscara de Rede"
     echo "5- Modificar Gateway"
     echo "6- Modificar DNS 1"
     echo "7- Modificar DNS 2"
     echo "0- Página anterior"
 }
 
-#logical ----------------------------------------------------------------------
+# Lógica de opções ---------------------------------------------------------
 optionmenu() {
     case $1 in
     1)
-        echo "Status do serviço SSH"
-        menussh
+        echo "Configurando serviço SSH"
+        menu_ssh
         ;;
     2)
-        echo "Mudar IP da máquina"
-        menuip
+        echo "Configurando IP da máquina"
+        menu_ip
         ;;
     0)
         condition=false
@@ -88,23 +90,20 @@ optionmenu() {
 optionmenussh() {
     case $1 in
     1)
-        echo "Status do serviço SSH"
-        # Adicione os comandos para verificar o status do SSH, se necessário.
+        echo "Desativando/Ativando o serviço SSH"
+        systemctl restart sshd
         ;;
     2)
-        echo "Mudar IP da máquina"
-        # Adicione comandos para mudar o IP da máquina, se necessário.
+        echo "Modificando Root Login"
+        # Comando para modificar root login
         ;;
     3)
-        echo "Configurar SSH"
-        # Adicione os comandos para configurar o SSH, se necessário.
-        ;;
-    4)
-        echo "Opção 4 selecionada"
+        echo "Adicionando Grupo"
+        # Comando para adicionar grupo
         ;;
     0)
-        condition=false
-        echo "Saindo..."
+        condition=true
+        main_menu
         ;;
     *)
         echo "Opção inválida!"
@@ -115,38 +114,12 @@ optionmenussh() {
 optionmenuip() {
     case $1 in
     1)
-        echo "Status do serviço SSH"
-        # Adicione os comandos para verificar o status do SSH, se necessário.
-        ;;
-    2)
-        echo "Mudar IP da máquina"
-        # Adicione comandos para mudar o IP da máquina, se necessário.
-        ;;
-    3)
-        echo "Configurar SSH"
-        # Adicione os comandos para configurar o SSH, se necessário.
-        ;;
-    4)
-        echo "Opção 4 selecionada"
-        ;;
-    5)
-        echo "Opção 5 selecionada"
-        ;;
-    6)
-        echo "Opção 6 selecionada"
-        ;;
-    7)
-        echo "Opção 7 selecionada"
-        ;;
-    8)
-        echo "Opção 8 selecionada"
-        ;;
-    9)
-        echo "Opção 9 selecionada"
+        echo "Desativando/Ativando interface de rede"
+        # Comando para ativar/desativar interface
         ;;
     0)
-        condition=false
-        echo "Saindo..."
+        condition=true
+        main_menu
         ;;
     *)
         echo "Opção inválida!"
@@ -154,11 +127,13 @@ optionmenuip() {
     esac
 }
 
-# Laço principal --------------------------------------------------------------
+# Loop principal -----------------------------------------------------------
 condition=true
-while [ $condition ]; do 
+main_menu() {
     logo
     menu
-    read -p "Escolha uma opção: " user_option  # A função read agora salva a opção do usuário na variável user_option
-    optionmenu $user_option  # Passa o valor de user_option para a função option
-done
+    read -p "Escolha uma opção: " user_option
+    optionmenu $user_option
+}
+
+main_menu
