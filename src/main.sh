@@ -18,7 +18,7 @@ fi
 
 # check status SSH --------------------------------------------------------
 statusssh() {
-    echo "Status SSH: " systemctl is-active --quiet sshd && echo "Ativo" || echo "Inativo"
+    systemctl is-active --quiet sshd && echo " SSH: Ativo" || echo " SSH: Inativo"
 }
 
 # check status IP ---------------------------------------------------------
@@ -36,7 +36,7 @@ menu() {
 
 # Menu SSH -----------------------------------------------------------------
 menussh() {
-    echo "         -- MENU SSH -- "
+    echo "         -- MENU CONFIGURAR SSH -- "
     echo " "
     statusssh
     echo " "
@@ -53,7 +53,7 @@ menussh() {
 
 # Menu IP ------------------------------------------------------------------
 menuip() {
-    echo "         -- MENU IP -- "
+    echo "         -- MENU CONFIGURAR IP -- "
     echo " "
     statusip
     echo " "
@@ -71,20 +71,20 @@ menuip() {
 optionmenu() {
     case $1 in
     1)
-        echo "Configurando serviço SSH"
         clear
         logo
         menussh
         ;;
     2)
-        echo "Configurando IP da máquina"
         clear
         logo
         menuip
         ;;
+    
     0)
+        clear
         condition=false
-        echo "Saindo..."
+        clear
         ;;
     *)
         echo "Opção inválida!"
@@ -106,9 +106,26 @@ optionmenussh() {
         echo "Adicionando Grupo"
         # Comando para adicionar grupo
         ;;
+   
+    4)
+        clear
+        ;;
+    5)
+        clear
+        ;;
+    6)
+        clear
+        ;;
+    7)
+        clear
+        ;;
+    8)  
+        clear
+        ;;
+
     0)
-        condition=true
-        main_menu
+        clear
+        menu
         ;;
     *)
         echo "Opção inválida!"
@@ -122,9 +139,27 @@ optionmenuip() {
         echo "Desativando/Ativando interface de rede"
         # Comando para ativar/desativar interface
         ;;
+    2)
+        clear
+        ;;
+    3)
+        clear
+        ;;
+    4)
+        clear
+        ;;
+    5)
+        clear
+        ;;
+    6)
+        clear
+        ;;
+    7)
+        clear
+        ;;
     0)
-        condition=true
-        main_menu
+        clear
+        menu
         ;;
     *)
         echo "Opção inválida!"
@@ -134,11 +169,9 @@ optionmenuip() {
 
 # Loop principal -----------------------------------------------------------
 condition=true
-main_menu() {
+while [ $condition -eq true ] do
     logo
     menu
     read -p "Escolha uma opção: " user_option
     optionmenu $user_option
-}
-
-main_menu
+done
