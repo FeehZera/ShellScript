@@ -13,4 +13,6 @@ local a=10
 
 echo $x $y $z $a
 
-#
+#array 
+
+
