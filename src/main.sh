@@ -6,7 +6,8 @@ logo() {
     echo " / __/ __| || | |  \/  | /_\ | \| | /_\ / __| __| _ \\ "
     echo " \__ \__ \ __ | | |\/| |/ _ \| .  |/ _ \ (_ | _||   /  "
     echo " |___/___/_||_| |_|  |_/_/ \_\_|\_/_/ \_\___|___|_|_\\ "
-    echo "                                              V1.0 beta"
+    echo "                                           V1.0 beta"
+    echo " "
 }
 
 # Verificar se é root
@@ -17,7 +18,7 @@ fi
 
 # check status SSH --------------------------------------------------------
 statusssh() {
-    systemctl is-active --quiet sshd && echo "SSH Ativo" || echo "SSH Inativo"
+    echo "Status SSH: " systemctl is-active --quiet sshd && echo "Ativo" || echo "Inativo"
 }
 
 # check status IP ---------------------------------------------------------
