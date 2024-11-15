@@ -22,15 +22,15 @@ statusssh() {
 
 # check status IP ---------------------------------------------------------
 statusip() {
-    ip a | grep inet
+    ip a | grep inet6
 }
 
 # Menu principal ----------------------------------------------------------
 menu() {
     echo "         -- MENU -- "
-    echo "1- Configurar serviço SSH"
-    echo "2- Configurar IP da Máquina"
-    echo "0- Sair"
+    echo " 1- Configurar serviço SSH"
+    echo " 2- Configurar IP da Máquina"
+    echo " 0- Sair"
 }
 
 # Menu SSH -----------------------------------------------------------------
@@ -39,15 +39,15 @@ menussh() {
     echo " "
     statusssh
     echo " "
-    echo "1- Desativar/Ativar SSH"
-    echo "2- Modificar Root Login"
-    echo "3- Adicionar Grupo"
-    echo "4- Remover Grupo"
-    echo "5- Reiniciar o serviço SSH"
-    echo "6- Abrir arquivo de configuração do SSH"
-    echo "7- Abrir pasta de chaves de criptografia"
-    echo "8- Gerar Chave de criptografia"
-    echo "0- Página anterior"
+    echo " 1- Desativar/Ativar SSH"
+    echo " 2- Modificar Root Login"
+    echo " 3- Adicionar Grupo"
+    echo " 4- Remover Grupo"
+    echo " 5- Reiniciar o serviço SSH"
+    echo " 6- Abrir arquivo de configuração do SSH"
+    echo " 7- Abrir pasta de chaves de criptografia"
+    echo " 8- Gerar Chave de criptografia"
+    echo " 0- Página anterior"
 }
 
 # Menu IP ------------------------------------------------------------------
@@ -56,14 +56,14 @@ menuip() {
     echo " "
     statusip
     echo " "
-    echo "1- Desativar/Ativar interface de rede"
-    echo "2- Modificar Conexão DCHP/STATIC"
-    echo "3- Modificar IP"
-    echo "4- Modificar Máscara de Rede"
-    echo "5- Modificar Gateway"
-    echo "6- Modificar DNS 1"
-    echo "7- Modificar DNS 2"
-    echo "0- Página anterior"
+    echo " 1- Desativar/Ativar interface de rede"
+    echo " 2- Modificar Conexão DCHP/STATIC"
+    echo " 3- Modificar IP"
+    echo " 4- Modificar Máscara de Rede"
+    echo " 5- Modificar Gateway"
+    echo " 6- Modificar DNS 1"
+    echo " 7- Modificar DNS 2"
+    echo " 0- Página anterior"
 }
 
 # Lógica de opções ---------------------------------------------------------
@@ -71,10 +71,14 @@ optionmenu() {
     case $1 in
     1)
         echo "Configurando serviço SSH"
+        clear
+        logo
         menussh
         ;;
     2)
         echo "Configurando IP da máquina"
+        clear
+        logo
         menuip
         ;;
     0)
