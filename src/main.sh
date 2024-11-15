@@ -35,41 +35,38 @@ statusssh() {
 # check status IP ---------------------------------------------------------
 statusip() {
 
-    #ip local
-    echo "IP Local: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1)"
+# Função para capturar as configurações de uma interface
+get_network_info() {
+    local interface=$1
 
-    #mascara de rede
-    
-    #mostra se esta em dhcp ou estatico
-    
+    # Verificar se a interface está configurada para IP estático
+    if grep -q "iface $interface inet static" /etc/network/interfaces; then
+        echo " Interface: $interface"
+
+        # Capturar o Gateway
+        gateway=$(grep -A 1 "iface $interface inet static" /etc/network/interfaces | grep -i "gateway" | awk '{print $2}')
+        if [ ! -z "$gateway" ]; then
+            echo " Gateway: $gateway"
+        else
+            echo " Gateway: Não configurado"
+        fi
+
+        # Capturar os servidores DNS
+        dns=$(grep -A 1 "iface $interface inet static" /etc/network/interfaces | grep -i "dns-nameservers" | awk '{print $2}')
+        if [ ! -z "$dns" ]; then
+            echo " DNS: $dns"
+        else
+            echo " DNS: Não configurado"
+        fi
+
+        echo # Linha em branco entre interfaces
+    fi
+}
+
 # Loop para todas as interfaces de rede
 for interface in $(ls /sys/class/net); do
-    echo "Interface: $interface"
-
-    # Verificando o método de configuração DHCP ou estático no arquivo /etc/network/interfaces
-    if grep -q "iface $interface inet dhcp" /etc/network/interfaces; then
-        echo "Modo: DHCP"
-    elif grep -q "iface $interface inet static" /etc/network/interfaces; then
-        echo "Modo: Estático"
-    else
-        echo "Modo: Desconhecido ou não configurado no arquivo /etc/network/interfaces"
-    fi
-
-    # Verificando a máscara de rede e IP usando o comando 'ip'
-    ip_info=$(ip -4 addr show $interface | grep inet)
-    if [ ! -z "$ip_info" ]; then
-        ip_address=$(echo $ip_info | awk '{print $2}' | cut -d/ -f1)
-        netmask=$(echo $ip_info | awk '{print $2}' | cut -d/ -f2)
-        echo "IP: $ip_address"
-        echo "Máscara de Rede: $netmask"
-    else
-        echo "Sem IP configurado"
-    fi
-
-    echo # Espaço em branco entre interfaces
+    get_network_info $interface
 done
-
-
 
 }
 
