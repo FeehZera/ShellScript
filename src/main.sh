@@ -71,11 +71,11 @@ optionmenu() {
     case $1 in
     1)
         echo "Configurando serviço SSH"
-        menu_ssh
+        menussh
         ;;
     2)
         echo "Configurando IP da máquina"
-        menu_ip
+        menuip
         ;;
     0)
         condition=false
