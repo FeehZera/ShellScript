@@ -152,6 +152,7 @@ optionmenussh() {
         else
             systemctl start sshd  # ativando
         fi
+        
         logo
         menussh
         ;;
@@ -168,8 +169,28 @@ optionmenussh() {
         logo
         menussh
         ;;
-    5)
-        systemctl restart sshd
+    5)  
+        if systemctl is-active --quiet sshd; then
+            /etc/init.d/ssh reload
+        else
+            echo "SSH: não está ativo"
+            echo "Se estiver em uma conexão SSH voce sera desconectado"
+            read -p " Deseja reiniciar mesmo assim [y/n]?" useropt
+            if [ useropt = y || useropt = Y ]; then
+            /etc/init.d/ssh reload
+            logo
+            menussh
+            elif [ useropt = n || useropt = N ]; then
+            logo
+            menussh
+            else
+            echo "Opcao invalida"
+            logo
+            menussh
+        fi  
+    
+    
+        echo ""
         logo
         menussh
         ;;
