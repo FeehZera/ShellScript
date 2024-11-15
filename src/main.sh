@@ -33,6 +33,9 @@ menu() {
     echo " 1- Configurar serviço SSH"
     echo " 2- Configurar IP da Máquina"
     echo " 0- Sair"
+    echo " "
+    read -p " Escolha uma opção: " user_option
+    optionmenu $user_option
 }
 
 # Menu SSH -----------------------------------------------------------------
@@ -50,6 +53,9 @@ menussh() {
     echo " 7- Abrir pasta de chaves de criptografia"
     echo " 8- Gerar Chave de criptografia"
     echo " 0- Página anterior"
+    echo " "
+    read -p " Escolha uma opção: " user_option
+    optionmenussh $user_option
 }
 
 # Menu IP ------------------------------------------------------------------
@@ -66,6 +72,9 @@ menuip() {
     echo " 6- Modificar DNS 1"
     echo " 7- Modificar DNS 2"
     echo " 0- Página anterior"
+    echo " "
+    read -p " Escolha uma opção: " user_option
+    optionmenuip $user_option
 }
 
 # Lógica de opções ---------------------------------------------------------
@@ -177,7 +186,4 @@ while $condition
 do
     logo            # Exibe o logo
     menu            # Exibe o menu
-    read -p "Escolha uma opção: " user_option
-    optionmenu $user_option
-    
 done
