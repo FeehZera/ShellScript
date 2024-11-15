@@ -2,6 +2,7 @@
 
 # logo ----------------------------------------------------------------------
 logo() {
+    clear
     echo "  ___ ___ _  _   __  __   _   _  _   _   ___ ___ ___   "
     echo " / __/ __| || | |  \/  | /_\ | \| | /_\ / __| __| _ \\ "
     echo " \__ \__ \ __ | | |\/| |/ _ \| .  |/ _ \ (_ | _||   /  "
@@ -71,23 +72,22 @@ menuip() {
 optionmenu() {
     case $1 in
     1)
-        clear
         logo
         menussh
         ;;
     2)
-        clear
         logo
         menuip
         ;;
     
     0)
-        clear
         condition=false
         clear
         ;;
     *)
         echo "Opção inválida!"
+        logo
+        menu
         ;;
     esac
 }
@@ -129,6 +129,8 @@ optionmenussh() {
         ;;
     *)
         echo "Opção inválida!"
+        logo
+        menussh
         ;;
     esac
 }
@@ -162,7 +164,9 @@ optionmenuip() {
         menu
         ;;
     *)
+        clear
         echo "Opção inválida!"
+        menuip
         ;;
     esac
 }
