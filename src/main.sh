@@ -8,7 +8,7 @@ echo " |___/___/_||_| |_|  |_/_/ \_\_|\_/_/ \_\___|___|_|_\\ "
 condition=true
 while [condition]; do 
     menu
-    read option()
+    read option
 
     done
 
