@@ -18,7 +18,7 @@ logo() {
     echo " \__ \__ \ __ | | |\/| |/ _ \| .  |/ _ \ (_ | _||   /  "
     echo " |___/___/_||_| |_|  |_/_/ \_\_|\_/_/ \_\___|___|_|_\\ "
     echo "                                           V1.0 beta"
-    echo " "
+    echo
 }
 
 # Menu principal ----------------------------------------------------------
@@ -66,6 +66,7 @@ menuip() {
     echo " 5- Modificar Gateway"
     echo " 6- Modificar DNS 1"
     echo " 7- Modificar DNS 2"
+    echo " 8- Abrir Arquivo de Configuração de Rede"
     echo " 0- Página anterior"
     echo
     read -p " Escolha uma opção: " user_option
@@ -73,14 +74,14 @@ menuip() {
 }
 # check status SSH --------------------------------------------------------
 statusssh() {
+    statusip
+    echo
     #check 
     if systemctl is-active --quiet sshd; then
-            echo "SSH: está ativo"
+            echo " SSH: está ativo"
         else
-            echo "SSH: não está ativo"
+            echo " SSH: não está ativo"
         fi
-
-    echo " IP Local: $(ip -4 addr show | awk '!/127.0.0.1/ && /inet/ {print $2}' | cut -d/ -f1)"
 
 }
 
@@ -107,7 +108,7 @@ statusip() {
 
         # Pega o tipo de configuração (DHCP ou Estático)
         if grep -q "iface $interface_ativa inet static" /etc/network/interfaces 2>/dev/null; then
-            echo " Configuração: Estática "
+            echo " Configuração: Static "
         else
             echo " Configuração: DHCP "
         fi
@@ -146,7 +147,7 @@ optionmenu() {
     10)
         apt install curl -y
         clear
-        curl ascii.live/rick
+        timeout 15s curl ascii.live/rick
         clear
         ;;
     *)
@@ -260,6 +261,12 @@ optionmenuip() {
     7)
         clear
         ;;
+    8)
+        clear
+        nano /etc/network/interfaces
+        logo
+        menuip
+        ;;
     0)
         logo
         menu
@@ -271,8 +278,6 @@ optionmenuip() {
         ;;
     esac
 }
-
-
 
 # Loop principal -----------------------------------------------------------
 
