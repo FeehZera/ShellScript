@@ -26,7 +26,7 @@ logo() {
     echo
 }
 
-# Menu principal ----------------------------------------------------------
+# Menu principal --------------------------------------------------------------
 menu() {
     echo "         -- MENU -- "
     echo
@@ -38,7 +38,7 @@ menu() {
     optionmenu $user_option
 }
 
-# Menu SSH -----------------------------------------------------------------
+# Menu SSH --------------------------------------------------------------------
 menussh() {
     echo "         -- MENU CONFIGURAR SSH -- "
     echo
@@ -57,7 +57,7 @@ menussh() {
     
 }
 
-# Menu IP ------------------------------------------------------------------
+# Menu IP ---------------------------------------------------------------------
 menuip() {
     echo "         -- MENU CONFIGURAR IP -- "
     echo
@@ -74,7 +74,7 @@ menuip() {
     read -p " Escolha uma opção: " user_option
     optionmenuip $user_option
 }
-# check status SSH --------------------------------------------------------
+# check status SSH ------------------------------------------------------------
 statusssh() {
     statusip
     echo
@@ -87,50 +87,62 @@ statusssh() {
 
 }
 
-# check status IP ---------------------------------------------------------
+# check status IP -------------------------------------------------------------
 statusip() {
 
-    # Identifica a interface de rede ativa (não loopback)
-    interface_ativa=$(ip -4 addr | awk '/inet/ && !/127.0.0.1/ {print $NF}' | head -n 1)
+    # Identificar a interface de rede ativa (não loopback)
+interface_ativa=$(ip -4 addr show | awk '/inet/ && !/127.0.0.1/ {print $NF}' | head -n 1)
 
-    # Verifica se a interface está ativa
-    if ip link show "$interface_ativa" | grep -q "state UP"; then
-        echo " Interface ativa: $interface_ativa "  # Adicionando espaço
+# Verificar se a interface está ativa
+if ip link show "$interface_ativa" | grep -q "state UP"; then
+    echo " Interface ativa: $interface_ativa "
 
-        # Captura o IP local e a máscara de sub-rede
-        ip_local=$(ip -4 addr show "$interface_ativa" | awk '/inet / {print $2}' | cut -d/ -f1)
-        netmask=$(ip -4 addr show "$interface_ativa" | awk '/inet / {print $2}' | cut -d/ -f2)
-        echo " IP Local: ${ip_local:-Não configurado} "  # Adicionando espaço
-        echo " Máscara de Sub-rede: ${netmask:-Não configurada} "  # Adicionando espaço
+    # Capturar o IP local e a máscara de sub-rede
+    ip_local=$(ip -4 addr show "$interface_ativa" | awk '/inet / {print $2}' | cut -d/ -f1)
+    netmask=$(ip -4 addr show "$interface_ativa" | awk '/inet / {print $2}' | cut -d/ -f2)
+    echo " IP Local: ${ip_local:-Não configurado} "
+    echo " Máscara de Sub-rede: ${netmask:-Não configurada} "
 
-        # Obtendo o IP público (externo)
-        ip_publico=$(curl -s https://ipv4.icanhazip.com)  # Corrigido para capturar o IP público IPv4
+    # Obter o IP público (externo)
+    ip_publico=$(curl -s https://ipv4.icanhazip.com)
+    echo " IP Público: ${ip_publico:-Não disponível} "
 
-        echo " IP Público: ${ip_publico:-Não disponível} "  # Adicionando espaço
-
-        # Pega o tipo de configuração (DHCP ou Estático)
-        if grep -q "iface $interface_ativa inet static" /etc/network/interfaces 2>/dev/null; then
-            echo " Configuração: Static "
-        else
-            echo " Configuração: DHCP "
-        fi
-
-        # Captura o Gateway
-        gateway=$(awk "/iface $interface_ativa inet static/,/gateway/" /etc/network/interfaces | grep -i "gateway" | awk '{print $2}')
-        echo " Gateway: ${gateway:-Não configurado} "
-
-        # Captura os servidores DNS
-        dns1=$(awk "/iface $interface_ativa inet static/,/dns-nameservers/" /etc/network/interfaces | grep -i "dns-nameservers" | awk '{print $2}' | cut -d' ' -f1)
-        dns2=$(awk "/iface $interface_ativa inet static/,/dns-nameservers/" /etc/network/interfaces | grep -i "dns-nameservers" | awk '{print $2}' | cut -d' ' -f2)
-        echo " DNS 1: ${dns1:-Não configurado} "
-        echo " DNS 2: ${dns2:-Não configurado} "
-        
+    # Verificar se a interface está configurada com DHCP ou IP estático
+    if grep -q "iface $interface_ativa inet static" /etc/network/interfaces 2>/dev/null; then
+        echo " Configuração: Estática "
     else
-        echo " Interface $interface_ativa não está ativa. "
+        echo " Configuração: DHCP "
     fi
 
+    # Capturar o Gateway, verificando se ele está configurado
+    gateway=$(awk "/iface $interface_ativa inet static/,/gateway/" /etc/network/interfaces | grep -i "gateway" | awk '{print $2}')
+    if [ -z "$gateway" ]; then
+        gateway="Não configurado"
+    fi
+    echo " Gateway: $gateway "
+
+    # Capturar os servidores DNS, verificando se estão configurados
+    dns1=$(awk "/iface $interface_ativa inet static/,/dns-nameservers/" /etc/network/interfaces | grep -i "dns-nameservers" | awk '{print $2}' | cut -d' ' -f1)
+    dns2=$(awk "/iface $interface_ativa inet static/,/dns-nameservers/" /etc/network/interfaces | grep -i "dns-nameservers" | awk '{print $2}' | cut -d' ' -f2)
+
+    if [ -z "$dns1" ]; then
+        dns1="Não configurado"
+    fi
+    if [ -z "$dns2" ]; then
+        dns2="Não configurado"
+    fi
+
+    echo " DNS 1: $dns1 "
+    echo " DNS 2: $dns2 "
+
+else
+    logo
+    echo " Interface $interface_ativa não está ativa. "
+fi
+
+
 }
-# Lógica de opções ---------------------------------------------------------
+# Lógica de opções ------------------------------------------------------------
 optionmenu() {
     case $1 in
     1)
@@ -141,15 +153,8 @@ optionmenu() {
         logo
         menuip
         ;;
-    
     0)
-        ((condition++))
-        clear
-        ;;
-    10)
-        apt install curl -y
-        clear
-        timeout 15s curl ascii.live/rick
+        ((condition--))
         clear
         ;;
     *)
@@ -161,8 +166,6 @@ optionmenu() {
         ;;
     esac
 }
-
-
 
 optionmenussh() {
     case $1 in
@@ -216,7 +219,7 @@ optionmenussh() {
         menussh
         ;;
     5)
-                # Obtém o diretório onde o script está localizado
+        # Obtém o diretório onde o script está localizado
         script_dir=$(dirname "$(readlink -f "$0")")
 
         # Caminho absoluto da pasta "keys"
@@ -245,7 +248,7 @@ optionmenussh() {
         menussh
         ;;
     6)  
-                # Obtém o diretório onde o script está localizado
+        # Obtém o diretório onde o script está localizado
         script_dir=$(dirname "$(readlink -f "$0")")
 
         # Caminho absoluto da pasta "keys"
@@ -315,24 +318,31 @@ optionmenuip() {
         clear
         ;;
     2)
-
         # Caminho do arquivo de configuração
         config_file="/etc/network/interfaces"
 
         # Faz backup do arquivo original
         cp "$config_file" "${config_file}.bak"
+        echo "Backup criado: ${config_file}.bak"
 
-        # Alterna entre dhcp e static
-        sed -i 's/inet dhcp/inet static/' "$config_file"
-        sed -i 's/inet static/inet dhcp/' "$config_file"
+        # Verifica se o arquivo contém "inet dhcp" ou "inet static"
+        if grep -q "inet dhcp" "$config_file"; then
+            echo "Alternando para configuração estática (static)..."
+            sed -i 's/inet dhcp/inet static/' "$config_file"
+        elif grep -q "inet static" "$config_file"; then
+            echo "Alternando para configuração dinâmica (dhcp)..."
+            sed -i 's/inet static/inet dhcp/' "$config_file"
+        else
+            echo "Nenhuma configuração de 'inet' encontrada no arquivo."
+            exit 1
+        fi
 
-        # Reinicia o serviço de rede para aplicar as mudanças
-        #systemctl restart networking
+        echo "Alteração concluída. Verifique o arquivo: $config_file"
+
         logo
         menuip
         ;;
     3)
-
         # Caminho do arquivo de configuração
         config_file="/etc/network/interfaces"
 
@@ -405,6 +415,52 @@ optionmenuip() {
         menuip
         ;;
     4)
+
+# Caminhos dos arquivos de configuração
+resolv_file="/etc/resolv.conf"
+interfaces_file="/etc/network/interfaces"
+
+# Faz backup dos arquivos originais
+cp "$resolv_file" "${resolv_file}.bak"
+cp "$interfaces_file" "${interfaces_file}.bak"
+
+# Solicita dois novos endereços DNS ao usuário
+echo "Digite o primeiro endereço de DNS:"
+read -r dns1
+
+echo "Digite o segundo endereço de DNS:"
+read -r dns2
+
+# Atualiza o arquivo resolv.conf
+> "$resolv_file"  # Limpa o conteúdo do arquivo
+echo "nameserver $dns1" >> "$resolv_file"
+echo "nameserver $dns2" >> "$resolv_file"
+
+# Atualiza o arquivo interfaces
+if grep -q "dns-nameservers" "$interfaces_file"; then
+    # Atualiza a linha existente de dns-nameservers
+    sed -i "s/^.*dns-nameservers.*/\tdns-nameservers $dns1 $dns2/" "$interfaces_file"
+else
+    # Adiciona nova configuração de DNS se não existir
+    echo -e "\ndns-nameservers $dns1 $dns2" >> "$interfaces_file"
+fi
+
+# Pergunta ao usuário se deseja salvar as alterações
+echo -e "\nDeseja salvar as alterações nos arquivos? (Y/N)"
+read -r resposta
+
+if [[ "$resposta" == "Y" || "$resposta" == "y" ]]; then
+    echo "Alterações salvas com sucesso."
+else
+    # Restaura os backups originais
+    mv "${resolv_file}.bak" "$resolv_file"
+    mv "${interfaces_file}.bak" "$interfaces_file"
+    echo "Alterações descartadas. Arquivos restaurados a partir dos backups."
+fi
+
+
+        logo
+        menuip
         ;;
     5)
         nano /etc/network/interfaces
@@ -435,9 +491,14 @@ optionmenuip() {
 
 # Loop principal de execucao --------------------------------------------------
 
-while [ $condition -lt 1 ];
+while [ $condition -lt 1 ] && [ $condition -ge 0 ];
 do
     logo            # Exibe o logo
     menu            # Exibe o menu
 done
-echo "$keys_dir"
+# captura de erro -------------------------------------------------------------
+if [ $condition -ge 1 ]; then
+    logo
+    echo " Foram encontrados $condition erro(s) na execução da aplicação."
+    echo
+fi
